@@ -15,6 +15,39 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.models.enums import FinanceType
 
 
+class SignupRequest(BaseModel):
+    """JSON body accepted by the signup endpoint."""
+
+    # EmailStr would require the optional email-validator package, so this
+    # beginner-friendly validation checks the basic shape without another
+    # dependency.  The database unique index remains the final duplicate guard.
+    email: str = Field(..., min_length=5, max_length=255)
+    password: str = Field(..., min_length=8, max_length=128)
+
+
+class LoginRequest(BaseModel):
+    """JSON body accepted by the login endpoint."""
+
+    email: str = Field(..., min_length=5, max_length=255)
+    password: str = Field(..., min_length=1, max_length=128)
+
+
+class UserResponse(BaseModel):
+    """Safe public user data; password_hash is intentionally excluded."""
+
+    id: int
+    email: str
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TokenResponse(BaseModel):
+    """JWT returned after successful authentication."""
+
+    access_token: str
+    token_type: str = "bearer"
+    user: UserResponse
+
+
 class WalletBase(BaseModel):
     """Fields shared by Wallet create and update requests."""
 
@@ -102,3 +135,19 @@ class TransactionResponse(TransactionBase):
 
     id: int
     model_config = ConfigDict(from_attributes=True)
+
+
+# Aggregate query results are not complete SQLAlchemy Model objects.  These
+# schemas describe the smaller JSON rows returned by the statistics endpoints.
+class ExpenseByCategoryResponse(BaseModel):
+    # category_name comes from Category.name after a JOIN.
+    category_name: str
+    # total_amount comes from SQL SUM(Transaction.amount).
+    total_amount: Decimal
+
+
+class CashflowByMonthResponse(BaseModel):
+    # month is the PostgreSQL EXTRACT(MONTH ...) result, from 1 through 12.
+    month: int
+    total_income: Decimal
+    total_expense: Decimal
