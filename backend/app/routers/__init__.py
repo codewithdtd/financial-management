@@ -1,10 +1,13 @@
 """Core HTTP routes for wallets, categories and transactions."""
 
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+# pyrefly: ignore [missing-import]
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import crud
 from app.db.session import get_async_session
+from app.models.enums import FinanceType
 from app.schemas import (
     CategoryCreate, CategoryResponse, CategoryUpdate,
     TransactionCreate, TransactionResponse,
@@ -80,3 +83,29 @@ async def remove_category(category_id: int, user_id: int = Query(..., gt=0), db:
 @router.post("/transactions", response_model=TransactionResponse, status_code=status.HTTP_201_CREATED)
 async def create_transaction(data: TransactionCreate, db: AsyncSession = Depends(get_async_session)):
     return await crud.create_transaction(db, data)
+
+
+@router.get("/transactions", response_model=list[TransactionResponse])
+async def list_transactions(
+    user_id: int = Query(..., gt=0),
+    wallet_id: int | None = Query(None, gt=0),
+    category_id: int | None = Query(None, gt=0),
+    type: FinanceType | None = Query(None),
+    start_date: datetime | None = Query(None),
+    end_date: datetime | None = Query(None),
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    db: AsyncSession = Depends(get_async_session),
+):
+    return await crud.get_transactions(
+        db,
+        user_id=user_id,
+        wallet_id=wallet_id,
+        category_id=category_id,
+        type=type,
+        start_date=start_date,
+        end_date=end_date,
+        limit=limit,
+        offset=offset,
+    )
+

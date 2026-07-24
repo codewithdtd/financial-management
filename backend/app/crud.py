@@ -5,6 +5,8 @@ the router makes the HTTP layer small and makes database behavior reusable in
 tests, background jobs or future CLI commands.
 """
 
+from datetime import datetime
+
 from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -197,3 +199,39 @@ async def create_transaction(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Could not create transaction",
         ) from exc
+
+
+# --------------------------- Transaction retrieval ------------------------
+
+async def get_transactions(
+    db: AsyncSession,
+    user_id: int,
+    wallet_id: int | None = None,
+    category_id: int | None = None,
+    type: FinanceType | None = None,
+    start_date: datetime | None = None,
+    end_date: datetime | None = None,
+    limit: int = 20,
+    offset: int = 0,
+) -> list[Transaction]:
+    """Retrieve transactions belonging to the user's wallets with filtering and pagination."""
+    query = select(Transaction).join(Wallet).where(Wallet.user_id == user_id)
+
+    if wallet_id is not None:
+        query = query.where(Transaction.wallet_id == wallet_id)
+    if category_id is not None:
+        query = query.where(Transaction.category_id == category_id)
+    if type is not None:
+        query = query.where(Transaction.type == type)
+    if start_date is not None:
+        query = query.where(Transaction.date_time >= start_date)
+    if end_date is not None:
+        query = query.where(Transaction.date_time <= end_date)
+
+    # Order by date_time descending, and break ties with ID descending
+    query = query.order_by(Transaction.date_time.desc(), Transaction.id.desc())
+    query = query.offset(offset).limit(limit)
+
+    result = await db.execute(query)
+    return list(result.scalars().all())
+
