@@ -18,6 +18,18 @@ class Settings(BaseSettings):
         "postgresql+asyncpg://finance_user:finance_password@localhost:5433/finance_db"
     )
 
+    # Secret used to sign JWT access tokens.  In a real deployment this must
+    # be replaced through the JWT_SECRET_KEY environment variable and never
+    # committed to source control.
+    jwt_secret_key: str = "development-only-change-this-secret"
+
+    # HS256 is a symmetric algorithm: the same secret signs and verifies JWTs.
+    jwt_algorithm: str = "HS256"
+
+    # Token lifetime in minutes.  A short lifetime limits damage if a token
+    # is accidentally exposed.
+    access_token_expire_minutes: int = 30
+
     # Cho phep override database_url bang file .env neu can.
     # Vi du trong .env co DATABASE_URL=...
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
