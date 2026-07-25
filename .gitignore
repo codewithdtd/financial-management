@@ -48,4 +48,20 @@ Thumbs.db
 
 # Docker local override files
 docker-compose.override.yml
+
+# Frontend dependencies and build output
+frontend/node_modules/
+frontend/.vite/
+frontend/coverage/
+frontend/.cache/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+# Frontend local environment files
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+
 /plan/*
