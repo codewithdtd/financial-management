@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import Layout from "./components/Layout";
 import TransactionForm from "./components/TransactionForm";
 import Dashboard from "./components/Dashboard";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import { getCategories, getStoredToken, logoutUser } from "./api";
+import { getCategories, getStoredToken, logoutUser, type Category, type FinanceType } from "./api";
 import { X } from "lucide-react";
 
-export default function App() {
+export default function App(): ReactNode {
   // Lazy initialization reads localStorage once when App first mounts.
   const [token, setToken] = useState(() => getStoredToken());
-  const [authView, setAuthView] = useState("login");
-  const [categories, setCategories] = useState([]);
-  const [transactionType, setTransactionType] = useState("expense");
+  const [authView, setAuthView] = useState<"login" | "register">("login");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [transactionType, setTransactionType] = useState<FinanceType>("expense");
   const [formOpen, setFormOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  function handleLoginSuccess(newToken) {
+  function handleLoginSuccess(newToken: string): void {
     setToken(newToken);
   }
 
@@ -26,7 +27,7 @@ export default function App() {
     setAuthView("login");
   }
 
-  function openTransactionForm(type) {
+  function openTransactionForm(type: FinanceType): void {
     setTransactionType(type);
     setFormOpen(true);
   }

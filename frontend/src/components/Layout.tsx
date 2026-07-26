@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { BarChart3, LayoutDashboard, LogOut, Menu, Moon, Sun, WalletCards, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-export default function Layout({ children, onLogout }) {
+interface LayoutProps {
+  children: ReactNode;
+  onLogout: () => void;
+}
+
+export default function Layout({ children, onLogout }: LayoutProps) {
   const { t, i18n } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "dark");
