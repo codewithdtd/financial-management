@@ -13,8 +13,11 @@
     "@vitejs/plugin-react": "latest",
     "axios": "latest",
     "lucide-react": "latest",
+    "i18next": "latest",
     "react": "latest",
     "react-dom": "latest",
+    "react-i18next": "latest",
+    "recharts": "latest",
     "tailwindcss": "latest",
     "vite": "latest"
   }
