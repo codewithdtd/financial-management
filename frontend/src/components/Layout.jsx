@@ -1,6 +1,6 @@
-import { BarChart3, LayoutDashboard, Menu, WalletCards } from "lucide-react";
+import { BarChart3, LayoutDashboard, LogOut, Menu, WalletCards } from "lucide-react";
 
-export default function Layout({ children }) {
+export default function Layout({ children, onLogout }) {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <header className="flex h-16 items-center justify-between border-b border-slate-800 bg-slate-900 px-4 sm:px-6">
@@ -11,7 +11,12 @@ export default function Layout({ children }) {
           <WalletCards className="text-cyan-300" size={22} />
           <span className="font-semibold">Finance OS</span>
         </div>
-        <span className="text-sm text-slate-400">Personal Finance</span>
+        <div className="flex items-center gap-3">
+          <span className="hidden text-sm text-slate-400 sm:inline">Personal Finance</span>
+          <button type="button" onClick={onLogout} className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-400 hover:bg-slate-800 hover:text-rose-300" title="Đăng xuất">
+            <LogOut size={17} /> <span className="hidden sm:inline">Đăng xuất</span>
+          </button>
+        </div>
       </header>
 
       <div className="flex min-h-[calc(100vh-4rem)]">
