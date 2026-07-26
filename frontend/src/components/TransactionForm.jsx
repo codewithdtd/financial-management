@@ -10,7 +10,7 @@ const emptyForm = {
   description: "",
 };
 
-export default function TransactionForm({ categories = [], onSaved }) {
+export default function TransactionForm({ categories = [], onSaved, initialType = "expense" }) {
   // useState stores values that must survive React renders and update the UI.
   // A normal `let amount = 0` would not notify React when its value changes.
   const [form, setForm] = useState(emptyForm);
@@ -19,6 +19,11 @@ export default function TransactionForm({ categories = [], onSaved }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+
+  // The dashboard opens this sheet with either income or expense preselected.
+  useEffect(() => {
+    setForm((current) => ({ ...current, type: initialType, category_id: "" }));
+  }, [initialType]);
 
   // useEffect runs after mount and loads the Wallet options required by the API.
   useEffect(() => {
@@ -123,7 +128,7 @@ export default function TransactionForm({ categories = [], onSaved }) {
 
       {success && (
         <div role="status" aria-live="polite" className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm">
-          <div className="animate-[success-pop_180ms_ease-out] rounded-2xl border border-emerald-400/30 bg-slate-900 px-10 py-8 text-center shadow-2xl">
+          <div className="animate-[success-pop_180ms_ease-out] w-full max-w-xs rounded-2xl border border-emerald-400/30 bg-slate-900 px-6 py-8 text-center shadow-2xl sm:px-10">
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-400/25">
               <Check size={42} strokeWidth={3} />
             </div>

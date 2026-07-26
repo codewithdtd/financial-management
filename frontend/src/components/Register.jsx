@@ -39,7 +39,7 @@ export default function Register({ onRegistered, onShowLogin }) {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-8">
-      <section className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl sm:p-8">
+      <section className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-2xl sm:p-8">
         <div className="mb-7 text-center">
           <WalletCards className="mx-auto mb-3 text-cyan-300" size={32} />
           <h1 className="text-2xl font-bold text-slate-100">Tạo tài khoản</h1>

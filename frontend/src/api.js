@@ -58,3 +58,24 @@ export async function createTransaction(payload) {
   const response = await api.post("/transactions", { ...payload, user_id: userId });
   return response.data;
 }
+
+export async function getCashflowByMonth() {
+  const response = await api.get("/stats/cashflow-by-month", {
+    params: { user_id: userId },
+  });
+  return response.data;
+}
+
+export async function getExpenseByCategory(fromDate, toDate) {
+  const response = await api.get("/stats/expenses-by-category", {
+    params: { user_id: userId, from_date: fromDate, to_date: toDate },
+  });
+  return response.data;
+}
+
+export async function getTransactions() {
+  const response = await api.get("/transactions", {
+    params: { user_id: userId, limit: 8, offset: 0 },
+  });
+  return response.data;
+}
