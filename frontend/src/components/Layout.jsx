@@ -1,16 +1,29 @@
 import { useState } from "react";
-import { BarChart3, LayoutDashboard, LogOut, Menu, WalletCards, X } from "lucide-react";
+import { BarChart3, LayoutDashboard, LogOut, Menu, Moon, Sun, WalletCards, X } from "lucide-react";
 
 export default function Layout({ children, onLogout }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "dark");
 
   function closeMenu() {
     setMenuOpen(false);
   }
 
+  function toggleTheme() {
+    setTheme((current) => {
+      const nextTheme = current === "dark" ? "light" : "dark";
+      localStorage.setItem("theme", nextTheme);
+      document.documentElement.dataset.theme = nextTheme;
+      return nextTheme;
+    });
+  }
+
+  // Apply the saved choice as soon as Layout mounts.
+  document.documentElement.dataset.theme = theme;
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
-      <header className="flex h-16 items-center justify-between border-b border-slate-800 bg-slate-900 px-4 sm:px-6">
+      <header className="relative flex h-16 items-center justify-between border-b border-slate-800 bg-slate-900 px-4 sm:px-6">
         <div className="flex items-center gap-3">
           <button className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 lg:hidden" aria-label="Mở menu">
             <Menu onClick={() => setMenuOpen(true)} size={20} />
@@ -24,6 +37,9 @@ export default function Layout({ children, onLogout }) {
             <LogOut size={17} /> <span className="hidden sm:inline">Đăng xuất</span>
           </button>
         </div>
+        <button type="button" onClick={toggleTheme} className="absolute right-14 top-3 rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-cyan-300 sm:right-16" title={theme === "dark" ? "Chuyển sang giao diện sáng" : "Chuyển sang giao diện tối"} aria-label="Đổi giao diện">
+          {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
       </header>
 
       {menuOpen && (
