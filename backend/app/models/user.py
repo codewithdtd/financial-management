@@ -16,7 +16,6 @@ from app.db.base import Base
 if TYPE_CHECKING:
     # Import chi phuc vu type hint, khong chay luc runtime.
     from app.models.category import Category
-    from app.models.wallet import Wallet
 
 
 # User ke thua Base nen SQLAlchemy se xem class nay la mot ORM model.
@@ -38,14 +37,6 @@ class User(Base):
 
     # Chi luu hash cua password, khong bao gio luu plain text password.
     password_hash: Mapped[str] = mapped_column(String(255))
-
-    # One-to-Many: mot User co nhieu Wallet.
-    # back_populates="user" phai khop voi Wallet.user.
-    # cascade="all, delete-orphan" nghia la xoa user thi cac wallet con bi xoa theo.
-    wallets: Mapped[list["Wallet"]] = relationship(
-        back_populates="user",
-        cascade="all, delete-orphan",
-    )
 
     # One-to-Many: mot User co nhieu Category.
     # Category.user la dau con lai cua quan he nay.
