@@ -33,8 +33,13 @@ export default function App(): ReactNode {
   }
 
   function handleTransactionSaved() {
-    setFormOpen(false);
     setRefreshKey((current) => current + 1);
+    // Keep the modal mounted briefly so the success animation is visible.
+    window.setTimeout(() => setFormOpen(false), 1800);
+  }
+
+  function handleCategoryCreated(category: Category): void {
+    setCategories((current) => [...current, category]);
   }
 
   // App owns shared Category data and passes it into the form as props.
@@ -63,7 +68,7 @@ export default function App(): ReactNode {
         <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-950/70 p-0 backdrop-blur-sm sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label="Thêm giao dịch">
           <div className="max-h-[92vh] w-full overflow-y-auto sm:max-w-lg">
             <div className="flex justify-end pb-2"><button type="button" onClick={() => setFormOpen(false)} className="rounded-full bg-slate-800 p-2 text-slate-300 hover:bg-slate-700" aria-label="Đóng"><X size={20} /></button></div>
-            <TransactionForm categories={categories} initialType={transactionType} onSaved={handleTransactionSaved} onClose={() => setFormOpen(false)} />
+            <TransactionForm categories={categories} initialType={transactionType} onCategoryCreated={handleCategoryCreated} onSaved={handleTransactionSaved} onClose={() => setFormOpen(false)} />
           </div>
         </div>
       )}

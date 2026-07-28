@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowDownLeft, ArrowUpRight, CircleDollarSign, Plus, WalletCards } from "lucide-react";
-import { getCashflowByMonth, getTransactions, getWallets, type CashflowPoint, type FinanceType, type Transaction, type Wallet } from "../api";
+import { getCashflowByMonth, getTransactions, type CashflowPoint, type FinanceType, type Transaction } from "../api";
 import DashboardCharts from "./DashboardCharts";
 
 interface DashboardProps {
@@ -13,7 +13,6 @@ function money(value: number | string | null | undefined): string {
 }
 
 export default function Dashboard({ refreshKey, onAddTransaction }: DashboardProps) {
-  const [wallets, setWallets] = useState<Wallet[]>([]);
   const [cashflow, setCashflow] = useState<CashflowPoint[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [error, setError] = useState("");
@@ -21,8 +20,7 @@ export default function Dashboard({ refreshKey, onAddTransaction }: DashboardPro
   useEffect(() => {
     async function loadSummary(): Promise<void> {
       try {
-        const [walletData, cashflowData, transactionData] = await Promise.all([getWallets(), getCashflowByMonth(), getTransactions()]);
-        setWallets(walletData);
+        const [cashflowData, transactionData] = await Promise.all([getCashflowByMonth(), getTransactions()]);
         setCashflow(cashflowData);
         setTransactions(transactionData);
         setError("");
@@ -36,8 +34,8 @@ export default function Dashboard({ refreshKey, onAddTransaction }: DashboardPro
   const totals = useMemo(() => ({
     income: cashflow.reduce((sum, item) => sum + Number(item.total_income || 0), 0),
     spent: cashflow.reduce((sum, item) => sum + Number(item.total_expense || 0), 0),
-    balance: wallets.reduce((sum, wallet) => sum + Number(wallet.balance || 0), 0),
-  }), [cashflow, wallets]);
+    balance: cashflow.reduce((sum, item) => sum + Number(item.total_income || 0) - Number(item.total_expense || 0), 0),
+  }), [cashflow]);
 
   return (
     <div className="space-y-4 sm:space-y-6">
