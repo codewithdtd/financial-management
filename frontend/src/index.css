@@ -2,13 +2,36 @@
 
 :root {
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-  color: #e2e8f0;
-  background: #020617;
+  color: #e8e6df;
+  background: #20211f;
 }
 
 * { box-sizing: border-box; }
 body { min-width: 320px; min-height: 100vh; margin: 0; }
 button { font: inherit; }
+
+/* Calm charcoal palette inspired by the reference statistics screen. */
+:root:not([data-theme="light"]) .bg-slate-950 { background-color: #20211f !important; }
+:root:not([data-theme="light"]) .bg-slate-900 { background-color: #2b2c2a !important; }
+:root:not([data-theme="light"]) .bg-slate-900\/70 { background-color: #252624 !important; }
+:root:not([data-theme="light"]) .bg-slate-900\/95 { background-color: #17181d !important; }
+:root:not([data-theme="light"]) .border-slate-800 { border-color: #3a3b38 !important; }
+:root:not([data-theme="light"]) .border-slate-700 { border-color: #484945 !important; }
+:root:not([data-theme="light"]) .text-slate-100,
+:root:not([data-theme="light"]) .text-slate-200,
+:root:not([data-theme="light"]) .text-slate-300 { color: #ffffff !important; }
+:root:not([data-theme="light"]) .text-slate-400,
+:root:not([data-theme="light"]) .text-slate-500 { color: #b8babd !important; }
+:root:not([data-theme="light"]) .bg-cyan-400 { background-color: #8167ed !important; }
+:root:not([data-theme="light"]) .text-cyan-300 { color: #a99aff !important; }
+:root:not([data-theme="light"]) .border-cyan-400 { border-color: #8f7bff !important; }
+:root:not([data-theme="light"]) .bg-emerald-400 { background-color: #63dfa0 !important; }
+:root:not([data-theme="light"]) .text-emerald-400,
+:root:not([data-theme="light"]) .text-emerald-300 { color: #63dfa0 !important; }
+:root:not([data-theme="light"]) .bg-rose-400 { background-color: #f27687 !important; }
+:root:not([data-theme="light"]) .text-rose-400,
+:root:not([data-theme="light"]) .text-rose-300 { color: #ff8795 !important; }
+:root:not([data-theme="light"]) .bg-gradient-to-br { background: #30312e !important; }
 
 /* Light theme overrides for the existing dark utility palette. */
 :root[data-theme="light"] {
@@ -21,6 +44,7 @@ button { font: inherit; }
 :root[data-theme="light"] .bg-slate-950 { background-color: #f1f5f9 !important; }
 :root[data-theme="light"] .bg-slate-900 { background-color: #ffffff !important; }
 :root[data-theme="light"] .bg-slate-900\/70 { background-color: #f8fafc !important; }
+:root[data-theme="light"] .bg-slate-900\/95 { background-color: #ffffff !important; }
 :root[data-theme="light"] .text-slate-100 { color: #0f172a !important; }
 :root[data-theme="light"] .text-slate-200 { color: #1e293b !important; }
 :root[data-theme="light"] .text-slate-300 { color: #334155 !important; }

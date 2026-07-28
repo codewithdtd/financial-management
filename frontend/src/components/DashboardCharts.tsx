@@ -13,7 +13,7 @@ interface ExpenseChartPoint {
   value: number;
 }
 
-const CHART_COLORS = ["#22d3ee", "#a78bfa", "#34d399", "#fbbf24", "#fb7185", "#60a5fa"];
+const CHART_COLORS = ["#78c8e8", "#9b8cff", "#73d69b", "#f4bd68", "#f08383", "#8fa5e8"];
 
 function money(value: number | string | null | undefined): string {
   return `${Number(value || 0).toLocaleString("en-US")} VND`;
@@ -71,8 +71,8 @@ export default function DashboardCharts({ refreshKey }: DashboardChartsProps) {
               <XAxis dataKey="month" tickFormatter={(month: number) => `M${month}`} stroke="#64748b" fontSize={11} />
               <YAxis stroke="#64748b" fontSize={11} />
               <Tooltip formatter={(value) => money(value as number)} />
-              <Bar dataKey="total_income" name="Income" fill="#34d399" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="total_expense" name="Expense" fill="#fb7185" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="total_income" name="Income" fill="#63dfa0" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="total_expense" name="Expense" fill="#f27687" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -39,9 +39,9 @@ export default function Dashboard({ refreshKey, onAddTransaction }: DashboardPro
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <section className="rounded-[1.75rem] bg-gradient-to-br from-cyan-400 to-blue-500 p-5 text-slate-950 shadow-xl sm:p-7">
-        <div className="flex items-start justify-between"><div><p className="text-sm font-medium text-slate-950/70">Total balance</p><p className="mt-2 text-3xl font-bold sm:text-4xl">{money(totals.balance)}</p></div><div className="rounded-2xl bg-white/20 p-3"><CircleDollarSign size={24} /></div></div>
-        <div className="mt-6 grid grid-cols-2 gap-3 text-sm"><div className="rounded-2xl bg-white/15 p-3"><p className="text-slate-950/65">Income</p><strong className="mt-1 block text-lg">{money(totals.income)}</strong></div><div className="rounded-2xl bg-slate-950/10 p-3"><p className="text-slate-950/65">Spent</p><strong className="mt-1 block text-lg">{money(totals.spent)}</strong></div></div>
+      <section className="rounded-[1.75rem] bg-gradient-to-br from-cyan-400 to-blue-500 p-5 text-white shadow-xl sm:p-7">
+        <div className="flex items-start justify-between"><div><p className="text-sm font-medium text-white/70">Total balance</p><p className="mt-2 text-3xl font-bold sm:text-4xl">{money(totals.balance)}</p></div><div className="rounded-2xl bg-white/20 p-3"><CircleDollarSign size={24} /></div></div>
+        <div className="mt-6 grid grid-cols-2 gap-3 text-sm"><div className="rounded-2xl bg-white/15 p-3"><p className="text-white/70">Income</p><strong className="mt-1 block text-lg">{money(totals.income)}</strong></div><div className="rounded-2xl bg-slate-950/10 p-3"><p className="text-white/70">Spent</p><strong className="mt-1 block text-lg">{money(totals.spent)}</strong></div></div>
       </section>
 
       <section className="grid grid-cols-2 gap-3"><button type="button" onClick={() => onAddTransaction("expense")} className="flex min-h-20 items-center justify-center gap-2 rounded-2xl bg-rose-400 px-4 py-4 font-bold text-slate-950 shadow-lg active:scale-[.98]"><ArrowDownLeft size={22} /> Expense</button><button type="button" onClick={() => onAddTransaction("income")} className="flex min-h-20 items-center justify-center gap-2 rounded-2xl bg-emerald-400 px-4 py-4 font-bold text-slate-950 shadow-lg active:scale-[.98]"><ArrowUpRight size={22} /> Income</button></section>
