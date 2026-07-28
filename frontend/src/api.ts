@@ -61,6 +61,20 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
+// If a protected request receives 401, clear the stale token and notify App.
+// This prevents the UI from remaining on Dashboard with an expired session.
+api.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    const requestUrl = error.config?.url || "";
+    if (error.response?.status === 401 && !requestUrl.includes("/auth/login")) {
+      logoutUser();
+      window.dispatchEvent(new Event("auth:logout"));
+    }
+    return Promise.reject(error);
+  },
+);
+
 export function getStoredToken(): string | null {
   return localStorage.getItem("access_token");
 }
