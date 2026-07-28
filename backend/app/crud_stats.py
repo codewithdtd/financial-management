@@ -9,7 +9,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.category import Category
 from app.models.enums import FinanceType
 from app.models.transaction import Transaction
-from app.models.wallet import Wallet
 from app.schemas import CashflowByMonthResponse, ExpenseByCategoryResponse
 
 
@@ -57,7 +56,12 @@ async def get_expense_by_category(
 async def get_cashflow_by_month(
     db: AsyncSession, user_id: int, year: int
 ) -> list[CashflowByMonthResponse]:
-    """Return income and expense totals for every month in ``year``."""
+    """Return income and expense totals for every month in ``year``.
+
+    The database query returns only months that have transactions.  We fill
+    missing months in Python afterwards, so the endpoint always returns a
+    predictable list from January through December.
+    """
     # extract("month", ...) becomes PostgreSQL EXTRACT(MONTH FROM ...).
     month_number = cast(extract("month", Transaction.date_time), Integer).label("month")
 
@@ -74,35 +78,38 @@ async def get_cashflow_by_month(
     start = datetime(year, 1, 1, tzinfo=timezone.utc)
     end = datetime(year + 1, 1, 1, tzinfo=timezone.utc)
 
-    # First aggregate existing transactions by month and user.
+    # Aggregate existing transactions by month and user.
+    # select_from(Transaction) makes the query's starting table explicit.
+    # This avoids SQLAlchemy choosing an unexpected FROM clause when the
+    # selected columns come from expressions and a joined table.
     monthly = (
         select(month_number, income_total, expense_total)
-        .join(Wallet, Transaction.wallet_id == Wallet.id)
-        .where(Wallet.user_id == user_id, Transaction.date_time >= start, Transaction.date_time < end)
+        .select_from(Transaction)
+        .join(Category, Transaction.category_id == Category.id)
+        .where(Category.user_id == user_id, Transaction.date_time >= start, Transaction.date_time < end)
         .group_by(month_number)
-        .subquery()
     )
 
-    # PostgreSQL generate_series creates rows 1..12, so empty months also
-    # appear after the LEFT OUTER JOIN with zero totals.
-    months = func.generate_series(1, 12).table_valued("month").alias("months")
-    statement = (
-        select(
-            months.c.month,
-            func.coalesce(monthly.c.total_income, 0).label("total_income"),
-            func.coalesce(monthly.c.total_expense, 0).label("total_expense"),
-        )
-        .outerjoin(monthly, months.c.month == monthly.c.month)
-        .order_by(months.c.month)
-    )
-
-    result = await db.execute(statement)
+    result = await db.execute(monthly)
     rows = result.all()
-    return [
-        CashflowByMonthResponse(
-            month=int(row.month),
-            total_income=row.total_income or Decimal("0.00"),
-            total_expense=row.total_expense or Decimal("0.00"),
+
+    # Convert the aggregate rows into a dictionary for quick lookup.
+    # SQL SUM returns Decimal for Numeric columns; keep Decimal so money does
+    # not pass through a binary floating-point value.
+    totals_by_month = {
+        int(row.month): (
+            row.total_income or Decimal("0.00"),
+            row.total_expense or Decimal("0.00"),
         )
         for row in rows
+    }
+
+    # Return all twelve months, including months without transactions.
+    return [
+        CashflowByMonthResponse(
+            month=month,
+            total_income=totals_by_month.get(month, (Decimal("0.00"), Decimal("0.00")))[0],
+            total_expense=totals_by_month.get(month, (Decimal("0.00"), Decimal("0.00")))[1],
+        )
+        for month in range(1, 13)
     ]

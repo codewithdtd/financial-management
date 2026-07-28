@@ -48,41 +48,6 @@ class TokenResponse(BaseModel):
     user: UserResponse
 
 
-class WalletBase(BaseModel):
-    """Fields shared by Wallet create and update requests."""
-
-    # Field trims the allowed length and prevents an empty wallet name.
-    # The client sends this value as JSON, and Pydantic converts it to str.
-    name: str = Field(..., min_length=1, max_length=100)
-
-
-class WalletCreate(WalletBase):
-    """Request body used to create a Wallet."""
-
-    # Authentication is not implemented yet, so the user_id is supplied by
-    # the client temporarily.  Later this should come from the JWT user.
-    user_id: int = Field(..., gt=0)
-
-
-class WalletUpdate(BaseModel):
-    """Request body used to partially update a Wallet."""
-
-    # None means the caller did not send this optional PATCH field.
-    name: str | None = Field(default=None, min_length=1, max_length=100)
-
-
-class WalletResponse(WalletBase):
-    """Data returned to the client after reading a Wallet."""
-
-    id: int
-    balance: Decimal
-    user_id: int
-
-    # SQLAlchemy returns an object with attributes, not a dictionary.
-    # from_attributes=True lets Pydantic read wallet.id, wallet.name, etc.
-    model_config = ConfigDict(from_attributes=True)
-
-
 class CategoryBase(BaseModel):
     """Fields shared by Category create and update requests."""
 
@@ -120,7 +85,6 @@ class TransactionBase(BaseModel):
     type: FinanceType
     description: str | None = Field(default=None, max_length=255)
     date_time: datetime | None = None
-    wallet_id: int = Field(..., gt=0)
     category_id: int = Field(..., gt=0)
 
 

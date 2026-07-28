@@ -1,4 +1,4 @@
-"""Core HTTP routes for wallets, categories and transactions."""
+"""Core HTTP routes for categories and transactions."""
 
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -11,7 +11,6 @@ from app.models.enums import FinanceType
 from app.schemas import (
     CategoryCreate, CategoryResponse, CategoryUpdate,
     TransactionCreate, TransactionResponse,
-    WalletCreate, WalletResponse, WalletUpdate,
 )
 
 router = APIRouter()
@@ -26,33 +25,6 @@ def require_object(value, detail: str):
 
 # FastAPI calls get_async_session, injects the yielded AsyncSession into db,
 # and closes the session after the request finishes.
-@router.get("/wallets", response_model=list[WalletResponse])
-async def list_wallets(user_id: int = Query(..., gt=0), db: AsyncSession = Depends(get_async_session)):
-    return await crud.get_wallets(db, user_id)
-
-
-@router.get("/wallets/{wallet_id}", response_model=WalletResponse)
-async def read_wallet(wallet_id: int, user_id: int = Query(..., gt=0), db: AsyncSession = Depends(get_async_session)):
-    return require_object(await crud.get_wallet(db, wallet_id, user_id), "Wallet not found")
-
-
-@router.post("/wallets", response_model=WalletResponse, status_code=status.HTTP_201_CREATED)
-async def create_wallet(data: WalletCreate, db: AsyncSession = Depends(get_async_session)):
-    return await crud.create_wallet(db, data)
-
-
-@router.patch("/wallets/{wallet_id}", response_model=WalletResponse)
-async def edit_wallet(wallet_id: int, data: WalletUpdate, user_id: int = Query(..., gt=0), db: AsyncSession = Depends(get_async_session)):
-    wallet = require_object(await crud.get_wallet(db, wallet_id, user_id), "Wallet not found")
-    return await crud.update_wallet(db, wallet, data)
-
-
-@router.delete("/wallets/{wallet_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def remove_wallet(wallet_id: int, user_id: int = Query(..., gt=0), db: AsyncSession = Depends(get_async_session)):
-    wallet = require_object(await crud.get_wallet(db, wallet_id, user_id), "Wallet not found")
-    await crud.delete_wallet(db, wallet)
-
-
 @router.get("/categories", response_model=list[CategoryResponse])
 async def list_categories(user_id: int = Query(..., gt=0), db: AsyncSession = Depends(get_async_session)):
     return await crud.get_categories(db, user_id)
@@ -88,7 +60,6 @@ async def create_transaction(data: TransactionCreate, db: AsyncSession = Depends
 @router.get("/transactions", response_model=list[TransactionResponse])
 async def list_transactions(
     user_id: int = Query(..., gt=0),
-    wallet_id: int | None = Query(None, gt=0),
     category_id: int | None = Query(None, gt=0),
     type: FinanceType | None = Query(None),
     start_date: datetime | None = Query(None),
@@ -100,7 +71,6 @@ async def list_transactions(
     return await crud.get_transactions(
         db,
         user_id=user_id,
-        wallet_id=wallet_id,
         category_id=category_id,
         type=type,
         start_date=start_date,
@@ -108,4 +78,3 @@ async def list_transactions(
         limit=limit,
         offset=offset,
     )
-

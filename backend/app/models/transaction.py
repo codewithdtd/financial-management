@@ -24,7 +24,6 @@ from app.models.enums import FinanceType
 if TYPE_CHECKING:
     # Chi import de type checker hieu string annotations ben duoi.
     from app.models.category import Category
-    from app.models.wallet import Wallet
 
 
 class Transaction(Base):
@@ -60,19 +59,11 @@ class Transaction(Base):
         server_default=func.now(),
     )
 
-    # Moi transaction bat buoc thuoc ve mot wallet.
-    # ondelete="CASCADE": xoa wallet thi xoa transaction cua wallet do.
-    wallet_id: Mapped[int] = mapped_column(ForeignKey("wallets.id", ondelete="CASCADE"))
-
     # Moi transaction bat buoc co category.
     # ondelete="RESTRICT": khong cho xoa category neu dang co transaction dung no.
     category_id: Mapped[int] = mapped_column(
         ForeignKey("categories.id", ondelete="RESTRICT")
     )
-
-    # Many-to-One: nhieu Transaction thuoc mot Wallet.
-    # back_populates="transactions" phai khop voi Wallet.transactions.
-    wallet: Mapped["Wallet"] = relationship(back_populates="transactions")
 
     # Many-to-One: nhieu Transaction thuoc mot Category.
     # back_populates="transactions" phai khop voi Category.transactions.

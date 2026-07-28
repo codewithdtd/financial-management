@@ -14,7 +14,7 @@ def write_csv_sync(transactions_data: list[dict], filename: str):
     """
     with open(filename, mode="w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["ID", "Amount", "Type", "Description", "Date Time", "Wallet ID", "Category ID"])
+        writer.writerow(["ID", "Amount", "Type", "Description", "Date Time", "Category ID"])
         for tx in transactions_data:
             writer.writerow([
                 tx["id"],
@@ -22,7 +22,6 @@ def write_csv_sync(transactions_data: list[dict], filename: str):
                 tx["type"],
                 tx["description"],
                 tx["date_time"],
-                tx["wallet_id"],
                 tx["category_id"]
             ])
 
@@ -33,12 +32,12 @@ async def generate_report_background(user_id: int, month: int, year: int):
     import anyio
     from app.db.session import AsyncSessionLocal
     from app.models.transaction import Transaction
-    from app.models.wallet import Wallet
 
     async with AsyncSessionLocal() as db:
-        # Query transactions belonging to user's wallets in the given month and year
-        query = select(Transaction).join(Wallet).where(
-            Wallet.user_id == user_id,
+        # Query transactions whose categories belong to the requested user.
+        from app.models.category import Category
+        query = select(Transaction).join(Category).where(
+            Category.user_id == user_id,
             extract("month", Transaction.date_time) == month,
             extract("year", Transaction.date_time) == year
         )
@@ -53,7 +52,6 @@ async def generate_report_background(user_id: int, month: int, year: int):
                 "type": tx.type.value,
                 "description": tx.description or "",
                 "date_time": tx.date_time.isoformat() if tx.date_time else "",
-                "wallet_id": tx.wallet_id,
                 "category_id": tx.category_id
             }
             for tx in transactions
