@@ -13,13 +13,6 @@ export interface AuthResponse {
   user?: UserResponse;
 }
 
-export interface Wallet {
-  id: number;
-  name: string;
-  balance: number | string;
-  user_id: number;
-}
-
 export interface Category {
   id: number;
   name: string;
@@ -33,7 +26,6 @@ export interface Transaction {
   type: FinanceType;
   description: string | null;
   date_time: string;
-  wallet_id: number;
   category_id: number;
 }
 
@@ -41,7 +33,6 @@ export interface TransactionPayload {
   amount: number;
   type: FinanceType;
   description: string | null;
-  wallet_id: number;
   category_id: number;
 }
 
@@ -96,13 +87,13 @@ export async function checkHealth(): Promise<{ status: string }> {
 
 const userId = Number(import.meta.env.VITE_USER_ID || 1);
 
-export async function getWallets(): Promise<Wallet[]> {
-  const response = await api.get<Wallet[]>("/wallets", { params: { user_id: userId } });
+export async function getCategories(): Promise<Category[]> {
+  const response = await api.get<Category[]>("/categories", { params: { user_id: userId } });
   return response.data;
 }
 
-export async function getCategories(): Promise<Category[]> {
-  const response = await api.get<Category[]>("/categories", { params: { user_id: userId } });
+export async function createCategory(name: string, type: FinanceType): Promise<Category> {
+  const response = await api.post<Category>("/categories", { name, type, user_id: userId });
   return response.data;
 }
 
